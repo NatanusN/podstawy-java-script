@@ -29,16 +29,15 @@ Przycisk.addEventListener("click", () => {
       Czasomierz.textContent = "Czas: " + czas;
       if (czas >= 10) {
         clearInterval(interval);
-        alert("Wynik: " + kliknięcia + " kliknięć w 10 sekund. " + "Częstotliwość klikania " + cps + " CPS");
+        let n = cps.toFixed(2)
+        alert("Wynik: " + kliknięcia + " kliknięć w 10 sekund. " + "Częstotliwość klikania " + n + " CPS");
         reset();
       }
     }, 1000);
   }
-
   kliknięcia++;
   Licznik.textContent = "Ilość kliknięć: " + kliknięcia;
-  cps = kliknięcia / czas
-  if (cps==0) CPS.textContent = ("CPS: 0")
-  else {CPS.textContent = "CPS" + cps}
+  if (czas >= 1) {cps = kliknięcia / czas
+    let n = cps.toFixed(2)
+    CPS.textContent = "CPS: " + n}
 });
-
