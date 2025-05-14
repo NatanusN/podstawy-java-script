@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+  <p onclick="this.remove()">Kliknij mnie - zniknę</p>
+<p onclick="this.remove()">Kliknij mnie też</p>
+<p onclick="this.remove()">I mnie!</p>
+
+<p id="timed">Ten tekst zniknie za 2 sekundy.</p>
+<button onclick="setTimeout(() => document.getElementById('timed').remove(), 2000)">Usuń z opóźnieniem</button>
+
+<p class="do-usuniecia">Do usunięcia 1</p>
+<p class="do-usuniecia">Do usunięcia 2</p>
+<p class="do-usuniecia">Do usunięcia 3</p>
+<button onclick="document.querySelectorAll('.do-usuniecia').forEach(el => el.remove())">Usuń wszystkie</button>
+
+</body>
+</html>
