@@ -1,3 +1,5 @@
+const gracz = document.getElementById("gracz");
+const komputer = document.getElementById("komputer");
 let obrazekKomputera = document.getElementById('komputerChoice')
 const opcje = ['papier', 'kamień', 'nożyce'];
 let WybórGracza = null
@@ -17,7 +19,8 @@ console.log('Komputer wybrał:', wybórKomputera);
 let gra = '';
     setTimeout(() => {
       let gra = '';
-
+gracz.textContent = "punkty gracza: " + punktyGracza;
+komputer.textContent = "punkty komputera: " + punktyKomputera;
       if (WybórGracza === wybórKomputera) {
         gra = 'remis';
       } else if (
@@ -46,5 +49,7 @@ let gra = '';
         }
         punktyGracza = 0;
         punktyKomputera = 0;
+        
       }
     }, 1000);}
+      
