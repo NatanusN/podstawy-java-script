@@ -1,3 +1,5 @@
+#A, #B, #C {width: 200px; height: 200px; background-size: contain; background-repeat: no-repeat;}
 #A {background-image: url(paper-5615944_640.png);}
 #B {background-image: url(rocks-48279_640.png);}
 #C {background-image: url(scissors-1297454_640.png);}
+#flex {display: flex;justify-content: space-around;}
