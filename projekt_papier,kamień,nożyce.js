@@ -1,4 +1,4 @@
-console.log("początek gry");
+let obrazekKomputera = document.getElementById('komputerChoice')
 const opcje = ['papier', 'kamień', 'nożyce'];
 let WybórGracza = null
 let punktyGracza = 0
@@ -11,8 +11,8 @@ document.querySelectorAll('.opcje').forEach(el => {
   });
 });
 function game (){
-
 const wybórKomputera = opcje[Math.floor(Math.random() * opcje.length)];
+obrazekKomputera.style.backgroundImage = `url(${wybórKomputera}.png)`
 console.log('Komputer wybrał:', wybórKomputera);
 let gra = '';
     setTimeout(() => {

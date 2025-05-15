@@ -1,4 +1,4 @@
-#A, #B, #C {width: 200px; height: 200px; background-size: contain; background-repeat: no-repeat;}
+#A, #B, #C, #komputerChoice {width: 200px; height: 200px; background-size: contain; background-repeat: no-repeat;}
 #A {background-image: url(papier.png);}
 #B {background-image: url(kamień.png);}
 #C {background-image: url(nożyce.png);}
