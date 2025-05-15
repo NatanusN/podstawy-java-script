@@ -4,9 +4,10 @@ document.querySelectorAll('.opcje').forEach(el => {
   el.addEventListener('click', function() {
     const WybórGracza = this.dataset.choice;
     console.log('Gracz wybrał:', WybórGracza);
+    game();
   });
 });
-const WybórGracza = this.dataset;
+function game (){const WybórGracza = this.dataset;
 const opcje = ['papier', 'kamień', 'nożyce'];
 const wybórKomputera = opcje[Math.floor(Math.random() * opcje.length)];
 console.log('Komputer wybrał:', wybórKomputera);
@@ -16,8 +17,8 @@ if (WybórGracza === wybórKomputera) {
 let gra = '';
 
 if (
-  (WybórGracza === 'papier' && wybórKomputera === 'kamień') ||
-  (WybórGracza === 'kamień' && wybórKomputera === 'nożyce') ||
+  (WybórGracza === 'papier' && wybórKomputera === 'kamień')||
+  (WybórGracza === 'kamień' && wybórKomputera === 'nożyce')||
   (WybórGracza === 'nożyce' && wybórKomputera === 'papier')
 ) {
   gra = 'wygrana';
@@ -77,4 +78,4 @@ if (punktyGracza === 3 || punktyKomputera === 3) {
         punktyGracza = 0;
         punktyKomputera = 0;
       }
-    }, 1000);
+    }, 1000);}
