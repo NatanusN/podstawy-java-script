@@ -5,6 +5,8 @@ const opcje = ['papier', 'kamień', 'nożyce'];
 let WybórGracza = null
 let punktyGracza = 0
 let punktyKomputera = 0
+gracz.textContent = "punkty gracza: 0"
+komputer.textContent = "punkty komputera: 0"
 document.querySelectorAll('.opcje').forEach(el => {
   el.addEventListener('click', function() {
      WybórGracza = this.dataset.choice;
@@ -19,8 +21,6 @@ console.log('Komputer wybrał:', wybórKomputera);
 let gra = '';
     setTimeout(() => {
       let gra = '';
-gracz.textContent = "punkty gracza: " + punktyGracza;
-komputer.textContent = "punkty komputera: " + punktyKomputera;
       if (WybórGracza === wybórKomputera) {
         gra = 'remis';
       } else if (
@@ -34,9 +34,11 @@ komputer.textContent = "punkty komputera: " + punktyKomputera;
       }
       if (gra === 'wygrana') {
         punktyGracza++;
+        gracz.textContent = "punkty gracza: " + punktyGracza;
         alert('Zdobyles punkt!');
       } else if (gra === 'przegrana') {
         punktyKomputera++;
+        komputer.textContent = "punkty komputera: " + punktyKomputera;
         alert('Straciłeś punkt.');
       } else {
         alert('Remis.');
@@ -49,7 +51,8 @@ komputer.textContent = "punkty komputera: " + punktyKomputera;
         }
         punktyGracza = 0;
         punktyKomputera = 0;
-        
+        gracz.textContent = "punkty gracza: " + punktyGracza;
+        komputer.textContent = "punkty komputera: " + punktyKomputera;
       }
     }, 1000);}
       
