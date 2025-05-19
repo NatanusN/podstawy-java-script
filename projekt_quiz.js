@@ -59,3 +59,20 @@ document.getElementById("next-btn").addEventListener("click", () => {
     showResults();
   }
 });
+function showResults() {
+  const container = document.getElementById("quiz-container");
+  container.innerHTML = "<h2>Koniec! Twój wynik: " + score + " / " + questions.length + "</h2>";
+
+  userAnswers.forEach(entry => {
+    const result = document.createElement("div");
+    const isCorrect = entry.selected === entry.correct;
+
+    result.innerHTML = `
+      <p><strong>${entry.question}</strong></p>
+      <p>Twoja odpowiedź: <span class="${isCorrect ? 'correct' : 'wrong'}">${entry.selected}</span></p>
+      <p>Poprawna odpowiedź: <strong>${entry.correct}</strong></p>
+      <hr>
+    `;
+    container.appendChild(result);
+  });
+}
