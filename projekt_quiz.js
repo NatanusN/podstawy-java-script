@@ -50,3 +50,12 @@ function selectAnswer(answer) {
 
   document.getElementById("next-btn").disabled = false;
 }
+showQuestion()
+document.getElementById("next-btn").addEventListener("click", () => {
+  currentQuestion++;
+  if (currentQuestion < questions.length) {
+    showQuestion();
+  } else {
+    showResults();
+  }
+});
