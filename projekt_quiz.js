@@ -10,9 +10,14 @@ const questions = [
     correct: "6"
   },
   {
-    question: "Kto jest autorem książki ''Pan Tadeusz''?",
-    answers: ["Jan Kochanowski", "Aleksander Fredro", "Juliusz Słowacki", "Adam Mickiewicz"],
-    correct: "Adam Mickiewicz"
+  question: "Jakiego kraju to jest flaga",
+  answers: ["Polski", "Indonezji", "Niemiec", "Rosji"],
+  correct: "Polski"
+  },
+  {
+ question: "Kto jest autorem książki ''Pan Tadeusz''?",
+  answers: ["Jan Kochanowski", "Aleksander Fredro", "Juliusz Słowacki", "Adam Mickiewicz"],
+  correct: "Adam Mickiewicz"
   }
 ];
 let currentQuestion = 0;
@@ -25,7 +30,8 @@ function showQuestion() {
   const answersDiv = document.getElementById("answers");
   answersDiv.innerHTML = "";
   document.getElementById("next-btn").disabled = true;
-
+if (currentQuestion === 2)  document.getElementById("img").classList.remove("off")
+else document.getElementById("img").classList.add("off")
   q.answers.forEach(answer => {
     const btn = document.createElement("button");
     btn.textContent = answer;
