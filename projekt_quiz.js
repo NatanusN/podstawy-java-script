@@ -1,7 +1,7 @@
 const questions = [
   {
     question: "Z czego składa się woda?",
-    answers: ["Z CO2 i H", "Z Cl i O", "Z H2 i O", "Z N i O"],
+    answers: ["Z CO<sub>2</sub> i H", "Z Cl i O", "Z H<sub>2</sub> i O", "Z N i O"],
     correct: "Z H2 i O"
   },
   {
@@ -26,7 +26,7 @@ const userAnswers = [];
 
 function showQuestion() {
   const q = questions[currentQuestion];
-  document.getElementById("question").textContent = q.question;
+  document.getElementById("question").innerHTML = q.question;
   const answersDiv = document.getElementById("answers");
   answersDiv.innerHTML = "";
   document.getElementById("next-btn").disabled = true;
@@ -34,7 +34,7 @@ if (currentQuestion === 2)  document.getElementById("img").classList.remove("off
 else document.getElementById("img").classList.add("off")
   q.answers.forEach(answer => {
     const btn = document.createElement("button");
-    btn.textContent = answer;
+    btn.innerHTML = answer;
     btn.onclick = () => selectAnswer(answer);
     answersDiv.appendChild(btn);
   });
