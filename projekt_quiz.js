@@ -2,7 +2,7 @@ const questions = [
   {
     question: "Z czego składa się woda?",
     answers: ["Z CO<sub>2</sub> i H", "Z Cl i O", "Z H<sub>2</sub> i O", "Z N i O"],
-    correct: "Z H2 i O"
+    correct: "Z H<sub>2</sub i O"
   },
   {
     question: "Ile to 2+2*2?",
