@@ -1,0 +1,22 @@
+.brzeg {
+  border: 1px solid #ccc;
+  padding: 20px;
+  min-height: 100px;
+  background-color: #e0ffe0;
+}
+
+#rzeka {
+  display: flex;
+  justify-content: space-between;
+  background-color: #a0d6ff;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.element {
+  cursor: pointer;
+  padding: 8px;
+  background: #fff;
+  margin-bottom: 5px;
+  border: 1px solid #aaa;
+}
