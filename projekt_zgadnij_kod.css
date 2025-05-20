@@ -1,0 +1,18 @@
+.correct {
+  background-color: #4caf50;
+  color: white;
+}
+
+.partial {
+  background-color: #ffeb3b;
+  color: black;
+}
+
+.wrong {
+  background-color: #ccc;
+  color: black;
+}
+
+#result-log {
+  margin-top: 20px;
+}
