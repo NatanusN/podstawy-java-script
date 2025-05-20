@@ -27,7 +27,7 @@ document.getElementById("guess-form").addEventListener("submit", function (e) {
     }
   }
 
-  document.getElementById("result-log").innerHTML += "<div>" + result.join(" ") + "</div>";
+  document.getElementById("result-log").innerHTML += "<li><div>" + result.join(" ") + "</div></li>";
   attempts++;
 
   if (guess.join("") === secretCode.join("")) {

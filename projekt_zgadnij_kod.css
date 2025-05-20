@@ -2,16 +2,19 @@
   background-color: #4caf50;
   color: white;
 }
+.correct::before{content:"🎉";}
 
 .partial {
   background-color: #ffeb3b;
   color: black;
 }
+.partial::before{content: "�";}
 
 .wrong {
   background-color: #ccc;
   color: black;
 }
+.wrong::before{content:"❌";}
 
 #result-log {
   margin-top: 20px;
