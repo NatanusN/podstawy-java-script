@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Ćwiczenia z addEventListener</title>
+  <style>
+    .button {
+      margin: 10px;
+      padding: 10px 20px;
+      background-color: lightblue;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Ćwiczenie 1: Jeden przycisk</h1>
+  <button id="clickMe">Kliknij mnie</button>
+
+  <!-- TODO: Znajdź przycisk o ID clickMe i dodaj nasłuchiwanie na kliknięcie. W konsoli wypisz "Kliknięto przycisk!" -->
+
+  <h1>Ćwiczenie 2: Kilka przycisków</h1>
+  <button class="button">Przycisk 1</button>
+  <button class="button">Przycisk 2</button>
+  <button class="button">Przycisk 3</button>
+
+  <!-- TODO: Znajdź wszystkie przyciski o klasie "button" i dodaj nasłuchiwanie na kliknięcie dla każdego.
+            Wypisz w konsoli tekst "Kliknięto: " i tekst klikniętego przycisku -->
+
+  <h1>Ćwiczenie 3: Lista elementów</h1>
+  <ul id="list">
+    <li>Element 1</li>
+    <li>Element 2</li>
+    <li>Element 3</li>
+  </ul>
+
+  <!-- TODO: Dodaj nasłuchiwanie na kliknięcie każdego elementu listy.
+            Po kliknięciu element ma zmienić kolor tekstu na czerwony. -->
+
+  <h1>Ćwiczenie 4: Formularz</h1>
+  <form id="myForm">
+    <input type="text" placeholder="Wpisz coś..." />
+    <button type="submit">Wyślij</button>
+  </form>
+
+  <!-- TODO: Znajdź formularz i dodaj nasłuchiwanie na zdarzenie 'submit'.
+            Zatrzymaj domyślną akcję i wypisz "Formularz został wysłany" -->
+
+  <script src="ćwiczenia.js">
+    // Miejsce na Twój kod JavaScript
+  </script>
+</body>
+</html>
