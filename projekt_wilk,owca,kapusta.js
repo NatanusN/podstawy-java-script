@@ -1,5 +1,15 @@
-let przycisk = document.getElementById("reset")
+
+let reset = document.getElementById("reset")
 let elements = document.querySelectorAll (".element")
+function resetuj() {
+    let brzeg = "lewyBrzeg"
+document.getElementById("rzeka").style.flexDirection ="row";
+elements.forEach(function(element) {
+document.getElementById(brzeg).appendChild(element)})
+tratwaNaLewym = true;
+naTratwie = null;
+}
+reset.addEventListener ("click", resetuj);
 console.log(elements)
 elements.forEach(element => {
     element.addEventListener("click",function(event)
@@ -42,11 +52,11 @@ function sprawdzZasady() {
   const dzieci = Array.from(document.getElementById(brzeg).children).map(el => el.id);
   
   if (dzieci.includes("wilk") && dzieci.includes("owca") && !dzieci.includes("przewoznik")) {
-    alert("❌ Wilk zjadł owcę!");
+    alert("❌ Wilk zjadł owcę!");resetuj()
   }
 
   if (dzieci.includes("owca") && dzieci.includes("kapusta") && !dzieci.includes("przewoznik")) {
-    alert("❌ Owca zjadła kapustę!");
+    alert("❌ Owca zjadła kapustę!");resetuj()
   }
 }
 function sprawdzwygrana() {
@@ -54,4 +64,8 @@ function sprawdzwygrana() {
   if (["wilk", "owca", "kapusta"].every(el => dzieci.includes(el))) {
     alert("🎉 Gratulacje! Wygrałeś!");
 }}
-function resetowanie() 
+
+
+
+
+
