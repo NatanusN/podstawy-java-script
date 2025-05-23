@@ -1,7 +1,8 @@
 .tower {
   width: 30%;
   height: 300px;
-  background-color: #ddd;
+  background: #00FFCC;
+  background: linear-gradient(90deg,rgba(0, 255, 204, 1) 0%, rgba(0, 255, 204, 1) 48%, rgba(255, 255, 255, 1) 48%, rgba(0, 0, 0, 1) 52%, rgba(0, 255, 204, 1) 50%, rgba(0, 255, 204, 1) 100%);
   margin: 10px;
   float: left;
   position: relative;
@@ -22,6 +23,9 @@
   border-radius: 4px;
 }
 
-.disk1 { width: 60%; }
-.disk2 { width: 80%; }
-.disk3 { width: 100%; }
+.disk1 { width: 10%; }
+.disk2 { width: 20%; }
+.disk3 { width: 40%;}
+.disk4 { width: 60%;}
+.disk5 { width: 80%;}
+.disk6 {width: 100%;}
