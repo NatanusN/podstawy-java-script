@@ -1,0 +1,4 @@
+.memory-game {display: flex;justify-content: space-evenly;}
+.memory-card img {width: 125px;height: 200px;}
+.front-face {backface-visibility: hidden;}
+.back-face {border: 1px solid black; box-shadow: 10px 5px 5px gray;margin: 5px;}
