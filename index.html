@@ -1,34 +1,186 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <title>Praktyka zawodowa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      color: #333;
+      padding: 40px;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 32px;
+    }
+
+    h2 {
+      font-size: 22px;
+      color: #444;
+    }
+
+    .project-container {
+      max-width: 1000px;
+      margin: 30px auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .project {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      transition: transform 0.3s;
+    }
+
+    .project:hover {
+      transform: translateY(-3px);
+    }
+
+    .project a {
+      text-decoration: none;
+      color: #fff;
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: background 0.3s;
+    }
+
+    .project a:hover {
+      background: linear-gradient(135deg, #5a67d8, #6b46c1);
+    }
+
+    .project .icon {
+      margin-right: 10px;
+    }
+
+    .description {
+      display: none;
+      margin-top: 15px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .toggle-btn {
+      margin-top: 10px;
+      padding: 8px 14px;
+      border: none;
+      background-color: #eee;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #333;
+      transition: background 0.3s;
+    }
+
+    .toggle-btn:hover {
+      background-color: #ddd;
+    }
+  </style>
 </head>
 <body>
-    <div>
-    <a href="projekt_klikacz.html">klikacz</a>
-    <div>
-    <a href="projekt_papier,kamień,nożyce.html">papier kamień nożyce</a>
-    <div>
-    <a href="projekt_kółko_i_krzyżyk.html">kółko i krzyżyk</a>
-    <div>
-    <a href="projekt_quiz.html">quiz</a>
-    <div>
-    <a href="projekt_zgadnij_kod.html">zgadnij kod</a>
-    <div>
-    <a href="projekt_kaltulator.html">kalkulator</a>
-    <div>
-    <a href="projekt_wierza_hanoi.html">wierza hanoi</a>
-    <div>
-        <a href="projekt_lista_zadań.html">lista zadań</a>
-        <div>
-            <a href="projekt_wilk,owca,kapusta.html"></a>
-        <div>
-            <a href="projekt_memory.html"></a>
-        </div>
-        </div>
+
+  <h1>Praktyka zawodowa - budowanie aplikacji w HTML, CSS i Javascript</h1>
+  <h2>Uczestnik praktyk: Nataniel Ciuraszkiewicz</h2>
+
+  <div class="project-container">
+    <!-- 10 projektów -->
+    <!-- Możesz edytować ikonę (class="fas fa-icon-name") i dodać opis -->
+    <!-- Projekt 1 -->
+    <div class="project">
+      <a href="projekt_klikacz.html"><i class="fas fa-code icon"></i> Projekt 1</a>
+      <button class="toggle-btn" onclick="toggleDescription(this)">Pokaż opis</button>
+      <div class="description">kliknij jak najwięcej w ciągu 10 sekund. Liczony w tym projekcie są kliknięcia, cps i czas.</div>
     </div>
-    </div></div></div></div></div></div></div>
+
+    <!-- Projekt 2 -->
+    <div class="project">
+      <a href="projekt_papier,kamień,nożyce.html"><i class="fas fa-laptop-code icon"></i> Projekt 2</a>
+      <button class="toggle-btn" onclick="toggleDescription(this)">Pokaż opis</button>
+      <div class="description">klasyczna gra kamień papier nożyce ale kontra komputer. gra do 3 punktów</div>
+    </div>
+
+    <!-- Projekt 3 -->
+    <div class="project">
+      <a href="projekt_kółko_i_krzyżyk.html"><i class="fas fa-mobile-alt icon"></i> Projekt 3</a>
+      <button class="toggle-btn" onclick="toggleDescription(this)">Pokaż opis</button>
+      <div class="description">klasyczna gra kółko i krzyżyk gdzie możesz zagrać z znajomym</div>
+    </div>
+
+    <!-- Projekt 4 -->
+    <div class="project">
+      <a href="projekt_quiz.html"><i class="fas fa-database icon"></i> Projekt 4</a>
+      <button class="toggle-btn" onclick="toggleDescription(this)">Pokaż opis</button>
+      <div class="description">krótki i prosty quiz</div>
+    </div>
+
+    <!-- Projekt 5 -->
+    <div class="project">
+      <a href="projekt_zgadnij_kod.html"><i class="fas fa-paint-brush icon"></i> Projekt 5</a>
+      <button class="toggle-btn" onclick="toggleDescription(this)">Pokaż opis</button>
+      <div class="description">odgadnij 3 cyfrowy kod. masz 6 prób na wygraną. jeśli cyfra jest prawidłowa jest na zielono, jeśli dobra w złym miejscu żółta a jeźeli zła na szaro</div>
+    </div>
+
+    <!-- Projekt 6 -->
+    <div class="project">
+      <a href="projekt_kaltulator.html"><i class="fas fa-globe icon"></i> Projekt 6</a>
+      <button class="toggle-btn" onclick="toggleDescription(this)">Pokaż opis</button>
+      <div class="description">prosty kalkulator na dodawanie, odejmowanie, mnożenie i dzielenie</div>
+    </div>
+
+    <!-- Projekt 7 -->
+    <div class="project">
+      <a href="projekt_wierza_hanoi.html"><i class="fas fa-cogs icon"></i> Projekt 7</a>
+      <button class="toggle-btn" onclick="toggleDescription(this)">Pokaż opis</button>
+      <div class="description">gra która może być kojarzona z dzieciństwem. przełóż wszystkie krążki na ostatni patyk ale one są zawsze w kolejności największa na dole a najmniejsza u góry</div>
+    </div>
+
+    <!-- Projekt 8 -->
+    <div class="project">
+      <a href="projekt_lista_zadań.html"><i class="fas fa-robot icon"></i> Projekt 8</a>
+      <button class="toggle-btn" onclick="toggleDescription(this)">Pokaż opis</button>
+      <div class="description">lista zadań gdzie można dodać zadania do zrobienia</div>
+    </div>
+
+    <!-- Projekt 9 -->
+    <div class="project">
+      <a href="projekt_wilk,owca,kapusta.html"><i class="fas fa-terminal icon"></i> Projekt 9</a>
+      <button class="toggle-btn" onclick="toggleDescription(this)">Pokaż opis</button>
+      <div class="description">przeprowadź tą trójkę na drógi brzeg ale wilk zjada owce, owca zjada kapustę</div>
+    </div>
+
+    <!-- Projekt 10 -->
+    <div class="project">
+      <a href="projekt_memory.html"><i class="fas fa-network-wired icon"></i> Projekt 10</a>
+      <button class="toggle-btn" onclick="toggleDescription(this)">Pokaż opis</button>
+      <div class="description">znajdź pary do wszystkich kart</div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDescription(button) {
+      const desc = button.nextElementSibling;
+      const isVisible = desc.style.display === 'block';
+      desc.style.display = isVisible ? 'none' : 'block';
+      button.textContent = isVisible ? 'Pokaż opis' : 'Ukryj opis';
+    }
+  </script>
+
 </body>
 </html>
