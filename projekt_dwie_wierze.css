@@ -1,7 +1,0 @@
-* {box-sizing: border-box;border: 1px solid blue;}
-#game {display:flex;flex-direction: column;height:95vh;}
-#mana-bar {display: flex;justify-content: space-between;}
-#battlefield{height: 60vh;display: flex;justify-content: space-between;}
-.tower1 {width: 14vh;margin-left: 10px;display: flex;flex-direction: column-reverse;}
-.tower2 {width: 14vh;margin-right: 10px;display: flex;flex-direction:column-reverse;}
-.floor{height: 10vh;background-color: gray; border-color: black}

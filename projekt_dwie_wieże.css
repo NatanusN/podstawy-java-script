@@ -1,0 +1,17 @@
+* {box-sizing: border-box;border: 1px solid blue;}
+#game {display:flex;flex-direction: column;height:95vh;}
+#mana-bar {display: flex;justify-content: space-between;}
+#battlefield {height: 60vh;display: flex;justify-content: space-between;}
+.tower1 {width: 14vh;margin-left: 10px;display: flex;flex-direction: column-reverse;}
+.tower2 {width: 14vh;margin-right: 10px;display: flex;flex-direction:column-reverse;}
+.floor{height: 10vh;background-color: gray; border-color: black}
+#hand {height: 26vh;display: flex;justify-content:center;}
+.card {
+  width: 16vh;
+  margin: 2px;
+  background-color: aqua;
+  padding: 5px;
+  cursor: pointer;
+}
+.card:hover {background-color: #00ff2a;}
+.card span {font-weight: bold ;}

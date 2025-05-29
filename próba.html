@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gra Wieże i Karty</title>
+  <link rel="stylesheet" href="próba.css" />
+</head>
+<body>
+  <div id="game">
+   <div id="mana-bar">
+  Mana Gracza: <span id="mana-count">0</span> 🔮 |
+  Mana Przeciwnika: <span id="enemy-mana-count">0</span> 🔮
+  <button id="end-turn">Zakończ turę</button>
+</div>
+    <div id="battlefield">
+      <div id="player-tower" class="tower"></div>
+      <div id="enemy-tower" class="tower"></div>
+    </div>
+    <div id="played-cards"></div>
+    <div id="hand"></div>
+    <div id="log"></div>
+  </div>
+  <script src="próba.js"></script>
+</body>
+</html>
