@@ -1,3 +1,4 @@
+let selectedFloorIndex = null;
 let cardPlayedThisTurn = false;
 let cardsExchangedThisTurn = 0;const player = {
   mana: 0,
@@ -14,7 +15,7 @@ const enemy = {
 };
 
 const cardPool = [
-  {name: "Katapulta", cost: 5, type: "atak", effect: "summonCatapult", description: "Katapulta atakuje wieżę co 2 tury"},
+  {name: "Katapulta", cost: 1, type: "atak", effect: "summonCatapult", description: "Katapulta atakuje wieżę co 2 tury"},
   {name: "Rycerz", cost: 3, type: "obrona", effect: "summonKnight", description: "Rycerz niszczy katapultę"},
   {name: "Łucznik", cost: 2, type: "atak", effect: "summonArcher", description: "Zabija rycerza"},
   {name: "Kula Ognia", cost: 4, type: "atak", effect: "fireball", description: "Niszczy jednostkę"},
@@ -28,22 +29,86 @@ function addLog(message) {
   log.innerHTML += `<div>> ${message}</div>`;
   log.scrollTop = log.scrollHeight;
 }
+function selectFloor(index) {
+  selectedFloorIndex = index;
+  addLog(`Wybrano piętro ${index + 1}.`);
 
-function renderTower(tower, elementId) {
+  // Podświetlanie
+  const floors = document.querySelectorAll('#player-tower .floor');
+  floors.forEach((div, i) => {
+    if (i === index) {
+      div.classList.add('selected');
+    } else {
+      div.classList.remove('selected');
+    }
+  });
+}
+  function renderTower(tower, elementId) {
   const towerDiv = document.getElementById(elementId);
   towerDiv.innerHTML = '';
-  tower.forEach(floor => {
+  tower.forEach((floor, index) => {
     const div = document.createElement('div');
     div.classList.add('floor');
+    div.dataset.floorIndex = index;
+
     if (floor.unit) {
       const unit = document.createElement('div');
       unit.classList.add('unit');
-      unit.textContent = floor.unit;
+
+      if (typeof floor.unit === 'object' && floor.unit.type === "catapult") {
+        unit.textContent = "🎯";
+      } else if (floor.unit === "🛡️" || floor.unit === "🏹" || floor.unit === "🪄") {
+        unit.textContent = floor.unit;
+      }
+
       div.appendChild(unit);
     }
+
+    // Dodaj interaktywność tylko do wieży gracza
+    if (elementId === "player-tower") {
+      div.addEventListener('click', () => selectFloor(index));
+    }
+
     towerDiv.appendChild(div);
   });
 }
+
+function activateCatapults(attacker, defender) {
+ for (let index = attacker.tower.length - 1; index >= 0; index--) {
+  const floor = attacker.tower[index];
+    if (floor.unit && typeof floor.unit === 'object' && floor.unit.type === 'catapult') {
+      floor.unit.counter++;
+
+      if (floor.unit.counter >= 2) {
+        const defenderFloor = defender.tower[index];
+
+        if (defenderFloor) {
+          if (removeBarrier(defender.tower)) {
+            addLog(`🪄 Bariera zablokowała atak katapulty z piętra ${index + 1}!`);
+          } else {
+            if (defenderFloor.unit) {
+              addLog(`🎯 Katapulta z piętra ${index + 1} zniszczyła jednostkę przeciwnika!`);
+            } else {
+              addLog(`🎯 Katapulta z piętra ${index + 1} zniszczyła piętro wieży przeciwnika!`);
+            }
+
+            // Usuwamy całe piętro
+            defender.tower.splice(index, 1);
+
+            checkVictory();
+          }
+        }
+
+        floor.unit.counter = 0; // Reset odliczania katapulty
+      }
+    }
+  };
+
+  // Po zmianach odśwież wieże
+  renderTower(player.tower, "player-tower");
+  renderTower(enemy.tower, "enemy-tower");
+}
+
 
 function updateMana() {
   player.mana = player.tower.length + (player.tower.length === 1 ? 1 : 0);
@@ -75,35 +140,49 @@ function renderHand() {
 function playCard(index) {
   if (cardPlayedThisTurn || cardsExchangedThisTurn > 0) {
     addLog("Możesz zagrać tylko jedną kartę lub wymienić 2 karty w turze.");
-if (cardsExchangedThisTurn === 2) {
-document.getElementById('end-turn').disabled = false;
-}
+    if (cardsExchangedThisTurn === 2) {
+      document.getElementById('end-turn').disabled = false;
+    }
     return;
   }
 
   const card = player.hand[index];
-  if (player.mana >= card.cost) {
-    player.mana -= card.cost;
-    addLog(`Zagrano kartę: ${card.name}`);
-    applyEffect(card.effect, player, enemy);
-    player.hand.splice(index, 1);
-    renderHand();
-    updateMana();
-    cardPlayedThisTurn = true;
-renderHand();
-updateMana();
-checkVictory();
 
-// Przeciwnik reaguje od razu
-setTimeout(() => {
-  enemyTurn();
+  if (player.mana < card.cost) {
+    addLog("Za mało many!");
+    return;
+  }
+
+  // Sprawdzenie wybranego piętra (oprócz "buildFloor")
+  if (card.effect !== "buildFloor" && selectedFloorIndex === null) {
+    addLog("Wybierz piętro w wieży, zanim zagrasz kartę z jednostką.");
+    return;
+  }
+
+  if (card.effect !== "buildFloor" && (selectedFloorIndex >= player.tower.length)) {
+    addLog("Nie możesz zagrać jednostki na nieistniejące piętro.");
+    return;
+  }
+
+  // Zastosowanie karty
+  player.mana -= card.cost;
+  addLog(`Zagrano kartę: ${card.name}`);
+  player.hand.splice(index, 1);
+
+  applyEffect(card.effect, player, enemy, selectedFloorIndex);
+
+  selectedFloorIndex = null;
+  cardPlayedThisTurn = true;
+
+  renderHand();
   updateMana();
   checkVictory();
-}, 1000);
 
-  } else {
-    addLog("Za mało many!");
-  }
+  setTimeout(() => {
+    enemyTurn();
+    updateMana();
+    checkVictory();
+  }, 1000);
 }
 function exchangeCard(index) {
   if (cardPlayedThisTurn || cardsExchangedThisTurn >= 2) {
@@ -134,32 +213,84 @@ function renderHand() {
     hand.appendChild(div);
   });
 }
-function applyEffect(effect, self, opponent) {
+function applyEffect(effect, self, opponent, floorIndex = 0) {
+  if (effect !== "buildFloor" && floorIndex >= self.tower.length) {
+    addLog("Błąd: wybrane piętro nie istnieje.");
+    return;
+  }
+
+  function removeBarrier(tower) {
+    for (let floor of tower) {
+      if (floor.unit === "🪄") {
+        floor.unit = null;
+        return true; // bariera została usunięta
+      }
+    }
+    return false; // nie było bariery
+  }
+
   switch(effect) {
     case "buildFloor":
       self.tower.push({});
       break;
+
     case "summonCatapult":
-      self.tower[0].unit = "🎯";
+      self.tower[floorIndex].unit = { type: "catapult", counter: 0 };
       break;
+
     case "summonKnight":
-      self.tower[0].unit = "🛡️";
-      break;
-    case "summonArcher":
-      self.tower[0].unit = "🏹";
-      break;
-    case "fireball":
-      if (opponent.tower[0] && opponent.tower[0].unit) {
-        delete opponent.tower[0].unit;
+      if (opponent.tower[floorIndex]) {
+        const target = opponent.tower[floorIndex].unit;
+
+        if (target && typeof target === 'object' && target.type === 'catapult') {
+          if (removeBarrier(opponent.tower)) {
+            addLog("🪄 Bariera zablokowała atak rycerza!");
+          } else {
+            delete opponent.tower[floorIndex].unit;
+            addLog("🛡️ Rycerz zniszczył katapultę!");
+          }
+        }
       }
+      self.tower[floorIndex].unit = "🛡️";
       break;
+
+    case "summonArcher":
+      if (opponent.tower[floorIndex]) {
+        const target = opponent.tower[floorIndex].unit;
+
+        if (target === "🛡️") {
+          if (removeBarrier(opponent.tower)) {
+            addLog("🪄 Bariera zablokowała strzałę łucznika!");
+          } else {
+            delete opponent.tower[floorIndex].unit;
+            addLog("🏹 Łucznik zabił rycerza!");
+          }
+        }
+      }
+      self.tower[floorIndex].unit = "🏹";
+      break;
+
+    case "fireball":
+  if (opponent.tower[floorIndex] && opponent.tower[floorIndex].unit) {
+    if (removeBarrier(opponent.tower)) {
+      addLog("🪄 Bariera zablokowała kulę ognia!");
+    } else {
+      delete opponent.tower[floorIndex].unit;
+      addLog("🔥 Kula ognia zniszczyła jednostkę.");
+    }
+  }
+  break;
+
     case "magicBarrier":
-      self.tower[0].unit = "🪄";
+      self.tower[floorIndex].unit = "🪄";
+      addLog("🔮 Postawiono magiczną barierę.");
       break;
   }
+
   renderTower(player.tower, "player-tower");
   renderTower(enemy.tower, "enemy-tower");
 }
+
 
 function enemyTurn() {
   updateEnemyMana();
@@ -172,6 +303,7 @@ function enemyTurn() {
   enemy.mana -= card.cost;
   addLog(`Przeciwnik zagrał: ${card.name}`);
   applyEffect(card.effect, enemy, player);
+  activateCatapults(enemy, player);
 }
 
 function updateEnemyMana() {
@@ -211,7 +343,8 @@ function endPlayerTurn() {
   cardPlayedThisTurn = false;
   cardsExchangedThisTurn = 0;
 
-  document.getElementById('end-turn').disabled = fal;
+  document.getElementById('end-turn').disabled = false;
+  activateCatapults(player, enemy);
 }
 
 
@@ -232,4 +365,4 @@ document.getElementById('end-turn').addEventListener('click', () => {
 function disableGame() {
   const buttons = document.querySelectorAll('button');
   buttons.forEach(btn => btn.disabled = false);
-}
+} 

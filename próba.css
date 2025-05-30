@@ -52,8 +52,12 @@ body {
   justify-content: center;
   align-items: center;
   position: relative;
+    cursor: pointer;
 }
 
+.floor.selected {
+  background-color: #cceeff;
+}
 .unit {
   font-size: 14px;
   position: absolute;
