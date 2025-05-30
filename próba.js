@@ -69,8 +69,6 @@ function calculateMaxMana(playerOrEnemy) {
 }
 
 function updateMana() {
-  player.mana = calculateMaxMana(player);
-  enemy.mana = calculateMaxMana(enemy);
   document.getElementById('mana-count').textContent = player.mana;
   document.getElementById('enemy-mana-count').textContent = enemy.mana;
 }
@@ -108,22 +106,20 @@ function playCard(index) {
     return;
   }
 
-  if (card.effect !== "buildFloor" && card.effect !== "buildTwoFloors" && selectedFloorIndex === null) {
+  if (!["buildFloor", "buildTwoFloors"].includes(card.effect) && selectedFloorIndex === null) {
     addLog("Wybierz piętro w wieży, zanim zagrasz kartę z jednostką.");
     return;
   }
 
   player.mana -= card.cost;
-  updateMana();
   addLog(`Zagrano kartę: ${card.name}`);
   applyEffect(card.effect, player, enemy, selectedFloorIndex);
   player.hand.splice(index, 1);
   renderHand();
   selectedFloorIndex = null;
   cardPlayedThisTurn = true;
+  updateMana();
   checkVictory();
-
-  // Przeciwnik wykonuje ruch po zagraniu karty gracza
   enemyRandomAction();
 }
 
@@ -138,8 +134,9 @@ function exchangeCard(index) {
   renderHand();
   addLog(`Wymieniono kartę.`);
 
-  // Przeciwnik wykonuje ruch po wymianie karty przez gracza
-  enemyRandomAction();
+  if (cardsExchangedThisTurn === 1) {
+    enemyRandomAction();
+  }
 }
 
 function applyEffect(effect, self, opponent, floorIndex = 0) {
@@ -175,13 +172,32 @@ function applyEffect(effect, self, opponent, floorIndex = 0) {
       self.tower[floorIndex].unit = "🧿";
       break;
     case "destroyOneFloor":
-      if(opponent.tower.length > 0) opponent.tower.pop();
+      if (opponent.tower.length > 0) {
+        const topFloor = opponent.tower[opponent.tower.length - 1];
+        if (topFloor.unit === "🧿") {
+          delete topFloor.unit;
+          addLog("🧿 Bariera zablokowała zniszczenie piętra!");
+        } else {
+          opponent.tower.pop();
+          addLog("💥 Zburzono 1 piętro przeciwnika!");
+        }
+      }
       break;
     case "destroyTwoFloors":
-      if(opponent.tower.length > 0) opponent.tower.pop();
-      if(opponent.tower.length > 0) opponent.tower.pop();
+      for (let i = 0; i < 2; i++) {
+        if (opponent.tower.length === 0) break;
+        const topFloor = opponent.tower[opponent.tower.length - 1];
+        if (topFloor.unit === "🧿") {
+          delete topFloor.unit;
+          addLog("🧿 Bariera zablokowała zniszczenie piętra!");
+        } else {
+          opponent.tower.pop();
+          addLog("💥 Zburzono piętro przeciwnika!");
+        }
+      }
       break;
   }
+
   renderTower(player.tower, "player-tower");
   renderTower(enemy.tower, "enemy-tower");
 }
@@ -221,25 +237,15 @@ function unitsAttack(attacker, defender) {
     } else if (unit === "🛡️" && typeof target === "object" && target.type === "catapult") {
       delete enemyFloor.unit;
       addLog(`🛡️ Rycerz zniszczył katapultę na piętrze ${i + 1}`);
-    } else if (unit === "🔥") {
-      if (target === "🧿") {
-        delete enemyFloor.unit;
-        addLog(`🧿 Bariera zablokowała kulę ognia!`);
-      } else if (target) {
-        delete enemyFloor.unit;
-        addLog(`🔥 Kula ognia zniszczyła jednostkę na piętrze ${i + 1}`);
-      }
     }
   });
+
   renderTower(player.tower, "player-tower");
   renderTower(enemy.tower, "enemy-tower");
 }
 
-// Funkcja losowego ruchu przeciwnika: atakuje lub wymienia kartę
 function enemyRandomAction() {
-  enemy.mana = calculateMaxMana(enemy);
-  updateMana();
-
+  enemy.mana = calculateMaxMana(enemy); // tylko aktualizacja, nie nadpisywanie
   const canPlayCards = cardPool.some(card => card.cost <= enemy.mana);
   const canExchangeCards = enemy.hand.length > 0;
 
@@ -248,14 +254,9 @@ function enemyRandomAction() {
     return;
   }
 
-  let action;
-  if (canPlayCards && canExchangeCards) {
-    action = Math.random() < 0.5 ? 'play' : 'exchange';
-  } else if (canPlayCards) {
-    action = 'play';
-  } else {
-    action = 'exchange';
-  }
+  let action = 'exchange';
+  if (canPlayCards) action = 'play';
+  if (canPlayCards && canExchangeCards) action = Math.random() < 0.5 ? 'play' : 'exchange';
 
   if (action === 'play') {
     const affordableCards = cardPool.filter(c => c.cost <= enemy.mana);
@@ -264,20 +265,16 @@ function enemyRandomAction() {
     enemy.mana -= card.cost;
     addLog(`🤖 Przeciwnik zagrał: ${card.name}`);
     applyEffect(card.effect, enemy, player, floorIndex);
-  } else if (action === 'exchange') {
+  } else {
     const index = Math.floor(Math.random() * enemy.hand.length);
     const newCard = cardPool[Math.floor(Math.random() * cardPool.length)];
     enemy.hand.splice(index, 1, newCard);
     addLog("🤖 Przeciwnik wymienił kartę.");
   }
 
-  renderTower(player.tower, "player-tower");
-  renderTower(enemy.tower, "enemy-tower");
-  renderHand();
-
+  updateMana();
   unitsAttack(enemy, player);
   activateCatapults(enemy, player);
-
   checkVictory();
 }
 
@@ -290,14 +287,13 @@ function checkVictory() {
 
 function endGame(message) {
   addLog("Koniec gry: " + message);
+  alert(message);
   document.getElementById("end-turn").disabled = true;
-  // opcjonalnie blokuj interakcje
 }
 
-// Inicjalizacja gry
 function startGame() {
-  player.tower = [{}, {},{}]; // na start 2 piętra
-  enemy.tower = [{}, {},{}];
+  player.tower = [{}, {}, {}];
+  enemy.tower = [{}, {}, {}];
   player.hand = [];
   enemy.hand = [];
   cardPlayedThisTurn = false;
@@ -309,23 +305,22 @@ function startGame() {
     enemy.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
   }
 
+  player.mana = calculateMaxMana(player);
+  enemy.mana = calculateMaxMana(enemy);
   updateMana();
   renderTower(player.tower, "player-tower");
   renderTower(enemy.tower, "enemy-tower");
   renderHand();
-
   addLog("Gra rozpoczęta!");
 }
 
 document.getElementById("end-turn").addEventListener("click", () => {
   addLog("Tura gracza zakończona.");
   drawCard();
+  player.mana = calculateMaxMana(player);
   updateMana();
   cardPlayedThisTurn = false;
   cardsExchangedThisTurn = 0;
-
-  enemyRandomAction();
 });
 
-// Startujemy grę przy załadowaniu strony
 startGame();
