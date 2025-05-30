@@ -89,6 +89,7 @@ body {
   height: 160px;
   cursor: pointer;
   transition: transform 0.2s;
+  position: relative;
 }
 
 .card:hover {
@@ -103,4 +104,9 @@ body {
   font-size: 14px;
   padding: 5px;
   border-radius: 5px;
+}
+.swap {
+  position: absolute;
+  bottom: 0;
+  right: 0;  /* lub 'right: 0' albo 'left: 50%; transform: translateX(-50%)' */
 }

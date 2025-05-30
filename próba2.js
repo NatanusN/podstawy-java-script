@@ -19,7 +19,7 @@ const cardPool = [
   { name: "🛡️Rycerz", cost: 3, type: "obrona", effect: "summonKnight", description: "Rycerz niszczy katapultę" },
   { name: "🏹Łucznik", cost: 2, type: "atak", effect: "summonArcher", description: "Zabija rycerza" },
   { name: "💥Kula Ognia", cost: 4, type: "atak", effect: "fireball", description: "Niszczy jednostkę" },
-  { name: "🪄Bariera", cost: 2, type: "obrona", effect: "magicBarrier", description: "Blokuje atak" },
+  { name: "🧿Bariera", cost: 2, type: "obrona", effect: "magicBarrier", description: "Blokuje atak" },
   { name: "🏗️Budowa Piętra", cost: 1, type: "budowa", effect: "buildFloor", description: "Dodaje piętro" },
    { name: "💥Zburz 1 Piętro", cost: 3, type: "atak", effect: "destroyOneFloor", description: "Zniszcz 1 piętro przeciwnika" },
   { name: "💥Zburz 2 Piętra", cost: 5, type: "atak", effect: "destroyTwoFloors", description: "Zniszcz 2 piętra przeciwnika" },
@@ -56,7 +56,7 @@ function renderTower(tower, elementId) {
       unit.classList.add('unit');
       if (typeof floor.unit === 'object') {
         if (floor.unit.type === "catapult") unit.textContent = "🎯";
-        else if (floor.unit.type === "barrier") unit.textContent = "🪄";
+        else if (floor.unit.type === "barrier") unit.textContent = "🧿";
       } else {
         unit.textContent = floor.unit;
       }
@@ -80,7 +80,7 @@ function activateCatapults(attacker, defender) {
           let target = defender.tower[index].unit;
           if (target && typeof target === "object" && target.type === "barrier") {
             defender.tower[index].unit = null;
-            addLog(`🪄 Bariera zablokowała atak katapulty na piętrze ${index + 1}.`);
+            addLog(`🧿 Bariera zablokowała atak katapulty na piętrze ${index + 1}.`);
           } else {
             defender.tower.splice(index, 1);
             addLog(`🎯 Katapulta zniszczyła piętro ${index + 1}!`);
@@ -115,7 +115,7 @@ function renderHand() {
     div.classList.add('card');
     div.innerHTML = `<strong>${card.name}</strong><br>🔮 ${card.cost}<br>${card.description}<br>
       <button onclick="playCard(${index})">Zagraj</button>
-      <button onclick="exchangeCard(${index})">Wymień</button>`;
+      <button onclick="exchangeCard(${index})" class="swap">Wymień</button>`;
     hand.appendChild(div);
   });
 }
@@ -158,9 +158,10 @@ function exchangeCard(index) {
     addLog("Możesz wymienić maksymalnie 2 karty, jeśli nie zagrałeś żadnej.");
     return;
   }
-  player.hand.splice(index, 1);
+
   const newCard = cardPool[Math.floor(Math.random() * cardPool.length)];
-  player.hand.push(newCard);
+  player.hand.splice(index, 1, newCard); // Usuwa 1 kartę na pozycji index i wstawia nową
+
   cardsExchangedThisTurn++;
   renderHand();
   addLog(`Wymieniono kartę.`);
@@ -210,7 +211,7 @@ function applyEffect(effect, self, opponent, floorIndex = 0) {
         const unit = opponent.tower[floorIndex].unit;
         if (typeof unit === "object" && unit.type === "barrier") {
           opponent.tower[floorIndex].unit = null;
-          addLog("🪄 Bariera zablokowała kulę ognia.");
+          addLog("🧿 Bariera zablokowała kulę ognia.");
         } else {
           opponent.tower[floorIndex].unit = null;
           addLog("🔥 Kula ognia zniszczyła jednostkę.");
