@@ -106,10 +106,11 @@ function playCard(index) {
     return;
   }
 
-  if (!["buildFloor", "buildTwoFloors"].includes(card.effect) && selectedFloorIndex === null) {
-    addLog("Wybierz piętro w wieży, zanim zagrasz kartę z jednostką.");
-    return;
-  }
+  const effectsRequiringFloor = ["summonCatapult", "summonKnight", "summonArcher", "magicBarrier"];
+if (effectsRequiringFloor.includes(card.effect) && selectedFloorIndex === null) {
+  addLog("Wybierz piętro w wieży, zanim zagrasz tę kartę.");
+  return;
+}
 
   player.mana -= card.cost;
   addLog(`Zagrano kartę: ${card.name}`);
