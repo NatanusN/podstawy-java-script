@@ -183,6 +183,32 @@ function applyEffect(effect, self, opponent, floorIndex = 0) {
       if(opponent.tower.length > 0) opponent.tower.pop();
       if(opponent.tower.length > 0) opponent.tower.pop();
       break;
+      case "destroyOneFloor":
+  if (opponent.tower.length > 0) {
+    const topFloor = opponent.tower[opponent.tower.length - 1];
+    if (topFloor.unit === "🧿") {
+      delete topFloor.unit;
+      addLog("🧿 Bariera zablokowała zniszczenie piętra!");
+    } else {
+      opponent.tower.pop();
+      addLog("💥 Zburzono 1 piętro przeciwnika!");
+    }
+  }
+  break;
+
+case "destroyTwoFloors":
+  for (let i = 0; i < 2; i++) {
+    if (opponent.tower.length === 0) break;
+    const topFloor = opponent.tower[opponent.tower.length - 1];
+    if (topFloor.unit === "🧿") {
+      delete topFloor.unit;
+      addLog("🧿 Bariera zablokowała zniszczenie piętra!");
+    } else {
+      opponent.tower.pop();
+      addLog("💥 Zburzono piętro przeciwnika!");
+    }
+  }
+  break;
   }
   renderTower(player.tower, "player-tower");
   renderTower(enemy.tower, "enemy-tower");
@@ -284,10 +310,14 @@ function enemyRandomAction() {
 }
 
 function checkVictory() {
-  if (player.tower.length >= 6) endGame("🎉 Wygrałeś! Twoja wieża osiągnęła 6 pięter.");
-  else if (enemy.tower.length === 0) endGame("🎉 Wygrałeś! Zniszczyłeś wieżę przeciwnika!");
-  else if (player.tower.length === 0) endGame("💀 Przegrałeś! Twoja wieża została zniszczona.");
-  else if (enemy.tower.length >= 6) endGame("💀 Przegrałeś! Wieża przeciwnika osiągnęła 6 pięter.");
+  if (player.tower.length >= 6) endGame("🎉 Wygrałeś! Twoja wieża osiągnęła 6 pięter."),
+  alert("🎉 Wygrałeś! Twoja wieża osiągnęła 6 pięter.");
+  else if (enemy.tower.length === 0) endGame("🎉 Wygrałeś! Zniszczyłeś wieżę przeciwnika!"),
+  alert("🎉 Wygrałeś! Zniszczyłeś wieżę przeciwnika!");
+  else if (player.tower.length === 0) endGame("💀 Przegrałeś! Twoja wieża została zniszczona."),
+  alert("💀 Przegrałeś! Twoja wieża została zniszczona.")
+  else if (enemy.tower.length >= 6) endGame("💀 Przegrałeś! Wieża przeciwnika osiągnęła 6 pięter."),
+  alert("💀 Przegrałeś! Wieża przeciwnika osiągnęła 6 pięter.")
 }
 
 function endGame(message) {
