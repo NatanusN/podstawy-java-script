@@ -54,7 +54,8 @@ function renderTower(tower, elementId) {
     if (floor.unit) {
       const unit = document.createElement('div');
       unit.classList.add('unit');
-      unit.textContent = typeof floor.unit === 'object' ? "🎯" : floor.unit;
+      if (typeof floor.unit === 'object' && floor.unit.type === 'catapult') unit.textContent = "🎯";
+      else unit.textContent = floor.unit;
       div.appendChild(unit);
     }
     if (elementId === "player-tower") {
@@ -69,15 +70,24 @@ function calculateMaxMana(playerOrEnemy) {
 }
 
 function updateMana() {
+  player.mana = calculateMaxMana(player);
+  enemy.mana = calculateMaxMana(enemy);
   document.getElementById('mana-count').textContent = player.mana;
   document.getElementById('enemy-mana-count').textContent = enemy.mana;
 }
 
-function drawCard() {
-  if (player.hand.length < 5) {
-    const card = cardPool[Math.floor(Math.random() * cardPool.length)];
-    player.hand.push(card);
-    renderHand();
+function drawCard(forPlayer = true) {
+  if (forPlayer) {
+    if (player.hand.length < 5) {
+      const card = cardPool[Math.floor(Math.random() * cardPool.length)];
+      player.hand.push(card);
+      renderHand();
+    }
+  } else {
+    if (enemy.hand.length < 5) {
+      const card = cardPool[Math.floor(Math.random() * cardPool.length)];
+      enemy.hand.push(card);
+    }
   }
 }
 
@@ -106,22 +116,28 @@ function playCard(index) {
     return;
   }
 
-  const effectsRequiringFloor = ["summonCatapult", "summonKnight", "summonArcher", "magicBarrier"];
-if (effectsRequiringFloor.includes(card.effect) && selectedFloorIndex === null) {
-  addLog("Wybierz piętro w wieży, zanim zagrasz tę kartę.");
+  // Karty które wymagają wybrania piętra (jednostki) muszą mieć wybrane piętro
+  const effectsThatDontNeedFloor = ["buildFloor", "buildTwoFloors", "destroyOneFloor", "destroyTwoFloors"];
+if (!effectsThatDontNeedFloor.includes(card.effect) && selectedFloorIndex === null) {
+  addLog("Wybierz piętro w wieży, zanim zagrasz kartę z jednostką.");
   return;
 }
 
   player.mana -= card.cost;
+  updateMana();
   addLog(`Zagrano kartę: ${card.name}`);
   applyEffect(card.effect, player, enemy, selectedFloorIndex);
   player.hand.splice(index, 1);
   renderHand();
   selectedFloorIndex = null;
   cardPlayedThisTurn = true;
-  updateMana();
   checkVictory();
-  enemyRandomAction();
+
+  // Nie wywołujemy enemyRandomAction tutaj, przeciwnik zagra na końcu tury
+  if (gameOver) {
+  addLog("Gra została zakończona. Rozpocznij nową grę.");
+  return;
+}
 }
 
 function exchangeCard(index) {
@@ -135,9 +151,11 @@ function exchangeCard(index) {
   renderHand();
   addLog(`Wymieniono kartę.`);
 
-  if (cardsExchangedThisTurn === 1) {
-    enemyRandomAction();
-  }
+  // Nie wywołujemy enemyRandomAction tutaj
+  if (gameOver) {
+  addLog("Gra została zakończona. Rozpocznij nową grę.");
+  return;
+}
 }
 
 function applyEffect(effect, self, opponent, floorIndex = 0) {
@@ -147,18 +165,23 @@ function applyEffect(effect, self, opponent, floorIndex = 0) {
   switch (effect) {
     case "buildFloor":
       self.tower.push({});
+      addLog("🏗️ Dodano piętro.");
       break;
     case "buildTwoFloors":
       self.tower.push({}, {});
+      addLog("🏗️ Dodano 2 piętra.");
       break;
     case "summonCatapult":
       self.tower[floorIndex].unit = { type: "catapult", counter: 0 };
+      addLog(`🎯 Postawiono katapultę na piętrze ${floorIndex + 1}.`);
       break;
     case "summonKnight":
       self.tower[floorIndex].unit = "🛡️";
+      addLog(`🛡️ Postawiono rycerza na piętrze ${floorIndex + 1}.`);
       break;
     case "summonArcher":
       self.tower[floorIndex].unit = "🏹";
+      addLog(`🏹 Postawiono łucznika na piętrze ${floorIndex + 1}.`);
       break;
     case "summonFireball":
       if (barrierBlocks(enemyFloor)) {
@@ -167,10 +190,13 @@ function applyEffect(effect, self, opponent, floorIndex = 0) {
       } else if (enemyFloor?.unit) {
         delete enemyFloor.unit;
         addLog("🔥 Kula ognia zniszczyła jednostkę!");
+      } else {
+        addLog("🔥 Kula ognia nie trafiła w nic.");
       }
       break;
     case "magicBarrier":
       self.tower[floorIndex].unit = "🧿";
+      addLog(`🧿 Postawiono barierę na piętrze ${floorIndex + 1}.`);
       break;
     case "destroyOneFloor":
       if (opponent.tower.length > 0) {
@@ -182,6 +208,8 @@ function applyEffect(effect, self, opponent, floorIndex = 0) {
           opponent.tower.pop();
           addLog("💥 Zburzono 1 piętro przeciwnika!");
         }
+      } else {
+        addLog("Nie ma pięter do zburzenia.");
       }
       break;
     case "destroyTwoFloors":
@@ -198,7 +226,6 @@ function applyEffect(effect, self, opponent, floorIndex = 0) {
       }
       break;
   }
-
   renderTower(player.tower, "player-tower");
   renderTower(enemy.tower, "enemy-tower");
 }
@@ -234,65 +261,144 @@ function unitsAttack(attacker, defender) {
 
     if (unit === "🏹" && target === "🛡️") {
       delete enemyFloor.unit;
-      addLog(`🏹 Łucznik zniszczył rycerza na piętrze ${i + 1}`);
-    } else if (unit === "🛡️" && typeof target === "object" && target.type === "catapult") {
+      addLog(`🏹 Łucznik zabił rycerza na piętrze ${i + 1}`);
+    } else if (unit === "🛡️" && target && typeof target === 'object' && target.type === "catapult") {
       delete enemyFloor.unit;
       addLog(`🛡️ Rycerz zniszczył katapultę na piętrze ${i + 1}`);
     }
   });
-
   renderTower(player.tower, "player-tower");
   renderTower(enemy.tower, "enemy-tower");
 }
+function endGame() {
+  const endTurnBtn = document.getElementById("end-turn");
 
-function enemyRandomAction() {
-  enemy.mana = calculateMaxMana(enemy); // tylko aktualizacja, nie nadpisywanie
-  const canPlayCards = cardPool.some(card => card.cost <= enemy.mana);
-  const canExchangeCards = enemy.hand.length > 0;
-
-  if (!canPlayCards && !canExchangeCards) {
-    addLog("🤖 Przeciwnik nie może wykonać ruchu.");
-    return;
+  if (endTurnBtn) {
+    endTurnBtn.textContent = "Nowa gra";
+    endTurnBtn.removeEventListener("click", endTurn); // usuń starą akcję
+    endTurnBtn.addEventListener("click", initGame);  // dodaj nową
   }
 
-  let action = 'exchange';
-  if (canPlayCards) action = 'play';
-  if (canPlayCards && canExchangeCards) action = Math.random() < 0.5 ? 'play' : 'exchange';
+  // Zablokuj wszystkie przyciski w kartach (Zagraj / Wymień)
+  const handButtons = document.querySelectorAll("#hand button");
+  handButtons.forEach(btn => btn.disabled = true);
 
-  if (action === 'play') {
-    const affordableCards = cardPool.filter(c => c.cost <= enemy.mana);
-    const card = affordableCards[Math.floor(Math.random() * affordableCards.length)];
-    const floorIndex = Math.floor(Math.random() * (enemy.tower.length || 1));
-    enemy.mana -= card.cost;
-    addLog(`🤖 Przeciwnik zagrał: ${card.name}`);
-    applyEffect(card.effect, enemy, player, floorIndex);
-  } else {
-    const index = Math.floor(Math.random() * enemy.hand.length);
-    const newCard = cardPool[Math.floor(Math.random() * cardPool.length)];
-    enemy.hand.splice(index, 1, newCard);
-    addLog("🤖 Przeciwnik wymienił kartę.");
-  }
+  // Zablokuj wybór pięter
+  const floors = document.querySelectorAll('#player-tower .floor');
+  floors.forEach(floor => floor.onclick = null);
 
-  updateMana();
-  unitsAttack(enemy, player);
-  activateCatapults(enemy, player);
-  checkVictory();
+  addLog("🔚 Gra zakończona. Kliknij 'Nowa gra', aby zacząć od nowa.");
 }
 
 function checkVictory() {
-  if (player.tower.length >= 6) endGame("🎉 Wygrałeś! Twoja wieża osiągnęła 6 pięter.");
-  else if (enemy.tower.length === 0) endGame("🎉 Wygrałeś! Zniszczyłeś wieżę przeciwnika!");
-  else if (player.tower.length === 0) endGame("💀 Przegrałeś! Twoja wieża została zniszczona.");
-  else if (enemy.tower.length >= 6) endGame("💀 Przegrałeś! Wieża przeciwnika osiągnęła 6 pięter.");
+  if (player.tower.length >= 6) {
+    addLog("🎉 Wygrałeś! Twoja wieża osiągnęła 6 pięter.");
+    alert("🎉 Wygrałeś! Twoja wieża osiągnęła 6 pięter.");
+    endGame();
+    return true;
+  }
+  if (enemy.tower.length === 0) {
+    addLog("🎉 Wygrałeś! Zniszczyłeś wieżę przeciwnika.");
+    alert("🎉 Wygrałeś! Zniszczyłeś wieżę przeciwnika.");
+    endGame();
+    return true;
+  }
+  if (player.tower.length === 0) {
+    addLog("💀 Przegrałeś! Twoja wieża została zniszczona.");
+    alert("💀 Przegrałeś! Twoja wieża została zniszczona.");
+    endGame();
+    return true;
+  }
+  if (enemy.tower.length >= 6) {
+    addLog("💀 Przegrałeś! Wieża przeciwnika osiągnęła 6 pięter.");
+    alert("💀 Przegrałeś! Wieża przeciwnika osiągnęła 6 pięter.");
+    endGame();
+    return true;
+  }
+  return false;
 }
 
-function endGame(message) {
-  addLog("Koniec gry: " + message);
-  alert(message);
-  document.getElementById("end-turn").disabled = true;
+
+function enemyRandomAction() {
+  enemy.mana = calculateMaxMana(enemy);
+  updateMana();
+  // Prostota: przeciwnik zagrywa pierwszą kartę, którą może
+  for (let i = 0; i < enemy.hand.length; i++) {
+    const card = enemy.hand[i];
+    if (card.cost <= enemy.mana) {
+      // Znajduje piętro do zagranej karty (jeśli wymaga)
+      let floorIndex = 0;
+      if (card.effect === "buildFloor" || card.effect === "buildTwoFloors") {
+        floorIndex = null;
+      } else if (enemy.tower.length > 0) {
+        floorIndex = Math.floor(Math.random() * enemy.tower.length);
+      } else {
+        floorIndex = null;
+      }
+
+      enemy.mana -= card.cost;
+      addLog(`Przeciwnik zagrywa: ${card.name}`);
+      applyEffect(card.effect, enemy, player, floorIndex);
+      enemy.hand.splice(i, 1);
+      break;
+    }
+  }
+  checkVictory();
+  renderHand(); // Odśwież rękę gracza (jakby coś się zmieniło)
 }
 
-function startGame() {
+function startTurn() {
+  cardPlayedThisTurn = false;
+  cardsExchangedThisTurn = 0;
+  player.mana = calculateMaxMana(player);
+  enemy.mana = calculateMaxMana(enemy);
+  updateMana();
+  drawCard(true);
+  drawCard(false);
+  activateCatapults(player, enemy);
+  unitsAttack(player, enemy);
+  renderTower(player.tower, "player-tower");
+  renderTower(enemy.tower, "enemy-tower");
+  renderHand();
+}
+
+function endTurn() {
+  if (!cardPlayedThisTurn && cardsExchangedThisTurn === 0) {
+    addLog("Musisz zagrać kartę lub wymienić karty, zanim zakończysz turę.");
+    return;
+  }
+
+  // Aktywacja katapult i ataki jednostek
+  activateCatapults(player, enemy);
+  unitsAttack(player, enemy);
+  checkVictory();
+
+  // Akcja przeciwnika
+  enemyRandomAction();
+
+  // Aktywacja katapult i ataki jednostek przeciwnika
+  activateCatapults(enemy, player);
+  unitsAttack(enemy, player);
+  checkVictory();
+
+  // Resetowanie zmiennych
+  cardPlayedThisTurn = false;
+  cardsExchangedThisTurn = 0;
+  selectedFloorIndex = null;
+  updateMana();
+  drawCard(true);
+  drawCard(false);
+  renderTower(player.tower, "player-tower");
+  renderTower(enemy.tower, "enemy-tower");
+  renderHand();
+
+  addLog("Tura gracza zakończona. Tura przeciwnika.");
+}
+
+// Inicjalizacja gry: daj po 3 piętra i 3 karty na start
+function initGame() {
+  gameOver = false; // ← WAŻNE: resetuj flagę zakończenia gry
+
   player.tower = [{}, {}, {}];
   enemy.tower = [{}, {}, {}];
   player.hand = [];
@@ -301,27 +407,26 @@ function startGame() {
   cardsExchangedThisTurn = 0;
   selectedFloorIndex = null;
 
+  // Wylosuj karty dla gracza i przeciwnika
   for (let i = 0; i < 3; i++) {
     drawCard();
     enemy.hand.push(cardPool[Math.floor(Math.random() * cardPool.length)]);
   }
 
-  player.mana = calculateMaxMana(player);
-  enemy.mana = calculateMaxMana(enemy);
   updateMana();
   renderTower(player.tower, "player-tower");
   renderTower(enemy.tower, "enemy-tower");
   renderHand();
-  addLog("Gra rozpoczęta!");
+
+  // Resetuj przycisk „Zakończ turę”
+  const endTurnBtn = document.getElementById("end-turn");
+  endTurnBtn.textContent = "Zakończ turę";
+  endTurnBtn.removeEventListener("click", initGame);
+  endTurnBtn.addEventListener("click", endTurn);
+  endTurnBtn.disabled = false;
+
+  addLog("🆕 Rozpoczęto nową grę!");
 }
 
-document.getElementById("end-turn").addEventListener("click", () => {
-  addLog("Tura gracza zakończona.");
-  drawCard();
-  player.mana = calculateMaxMana(player);
-  updateMana();
-  cardPlayedThisTurn = false;
-  cardsExchangedThisTurn = 0;
-});
-
-startGame();
+initGame();
+document.getElementById("end-turn").addEventListener("click", endTurn);
